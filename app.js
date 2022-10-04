@@ -1,11 +1,15 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const client = require("@mailchimp/mailchimp_marketing");
+const configration = require(`${__dirname}/config.js`);
+
 
 const app = express();
 
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({extended:true}));
+
+
 
 app.get("/",(req, res)=>{
   res.sendFile(`${__dirname}/signup.html`)
@@ -17,13 +21,15 @@ app.post("/",(req, res)=>{
   const lastName = req.body.lName;
   const email = req.body.email;
 
+  const config = configration.configGet();
+
   client.setConfig({
-    apiKey: "dc59da1405f05b68840a51f2943d9036-us8",
-    server: "us8",
+    apiKey: config.API_KEY,
+    server: config.SERVER,
   });
 
   const run = async () => {
-    const response = await client.lists.batchListMembers("d65596bbaa", {
+    const response = await client.lists.batchListMembers(config.ID, {
       members: [
         {
         email_address: email,
